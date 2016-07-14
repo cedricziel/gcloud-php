@@ -19,11 +19,11 @@ namespace Google\Cloud;
 
 use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Cloud\BigQuery\BigQueryClient;
+use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Logging\LoggingClient;
 use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\NaturalLanguage\NaturalLanguageClient;
 use Google\Cloud\Storage\StorageClient;
-use Google\Cloud\Vision\VisionClient;
 
 /**
  * Google Cloud Platform is a set of modular cloud-based services that allow you
@@ -89,31 +89,6 @@ class ServiceBuilder
     }
 
     /**
-     * Google Cloud Storage client. Allows you to store and retrieve data on
-     * Google's infrastructure. Find more information at
-     * [Google Cloud Storage API docs](https://developers.google.com/storage).
-     *
-     * Example:
-     * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $storage = $builder->storage();
-     * ```
-     *
-     * @param array $config Configuration options. See
-     *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
-     * @return StorageClient
-     */
-    public function storage(array $config = [])
-    {
-        return new StorageClient($config ? $this->resolveConfig($config) : $this->config);
-    }
-
-    /**
      * Google Cloud BigQuery client. Allows you to create, manage, share and query
      * data. Find more information at
      * [Google Cloud BigQuery Docs](https://cloud.google.com/bigquery/what-is-bigquery).
@@ -136,6 +111,57 @@ class ServiceBuilder
     public function bigQuery(array $config = [])
     {
         return new BigQueryClient($config ? $this->resolveConfig($config) : $this->config);
+    }
+
+    /**
+     * Google Cloud Datastore client. Cloud Datastore is a highly-scalable NoSQL
+     * database for your applications.  Find more information at
+     * [Google Cloud Datastore docs](https://cloud.google.com/datastore/docs/).
+     *
+     * Example:
+     * ```
+     * use Google\Cloud\ServiceBuilder;
+     *
+     * $builder = new ServiceBuilder([
+     *     'projectId' => 'myAwesomeProject'
+     * ]);
+     *
+     * $datastore = $builder->datastore();
+     * ```
+     *
+     * @param array $config Configuration options. See
+     *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
+     * @return LoggingClient
+     */
+    public function datastore(array $config = [])
+    {
+        return new DatastoreClient($config ? $this->resolveConfig($config) : $this->config);
+    }
+
+    /**
+     * Google Stackdriver Logging client. Allows you to store, search, analyze,
+     * monitor, and alert on log data and events from Google Cloud Platform and
+     * Amazon Web Services. Find more information at
+     * [Google Stackdriver Logging docs](https://cloud.google.com/logging/docs/).
+     *
+     * Example:
+     * ```
+     * use Google\Cloud\ServiceBuilder;
+     *
+     * $builder = new ServiceBuilder([
+     *     'projectId' => 'myAwesomeProject'
+     * ]);
+     *
+     * $logging = $builder->logging();
+     * ```
+     *
+     * @param array $config Configuration options. See
+     *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
+     * @return LoggingClient
+     */
+    public function logging(array $config = [])
+    {
+        return new LoggingClient($config ? $this->resolveConfig($config) : $this->config);
     }
 
     /**
@@ -164,9 +190,9 @@ class ServiceBuilder
     }
 
     /**
-     * Google Cloud Vision client. Allows you to understand the content of an
-     * image, classify images into categories, detect text, objects, faces and
-     * more. Find more information at [Google Cloud Vision docs](https://cloud.google.com/vision/docs/).
+     * Google Cloud Storage client. Allows you to store and retrieve data on
+     * Google's infrastructure. Find more information at
+     * [Google Cloud Storage API docs](https://developers.google.com/storage).
      *
      * Example:
      * ```
@@ -176,42 +202,16 @@ class ServiceBuilder
      *     'projectId' => 'myAwesomeProject'
      * ]);
      *
-     * $vision = $builder->vision();
+     * $storage = $builder->storage();
      * ```
      *
      * @param array $config Configuration options. See
      *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
-     * @return VisionClient
+     * @return StorageClient
      */
-    public function vision(array $config = [])
+    public function storage(array $config = [])
     {
-        return new VisionClient($config ? $this->resolveConfig($config) : $this->config);
-    }
-
-    /**
-     * Google Stackdriver Logging client. Allows you to store, search, analyze,
-     * monitor, and alert on log data and events from Google Cloud Platform and
-     * Amazon Web Services. Find more information at
-     * [Google Stackdriver Logging docs](https://cloud.google.com/logging/docs/).
-     *
-     * Example:
-     * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $logging = $builder->logging();
-     * ```
-     *
-     * @param array $config Configuration options. See
-     *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
-     * @return LoggingClient
-     */
-    public function logging(array $config = [])
-    {
-        return new LoggingClient($config ? $this->resolveConfig($config) : $this->config);
+        return new StorageClient($config ? $this->resolveConfig($config) : $this->config);
     }
 
     /**
