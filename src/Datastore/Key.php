@@ -100,7 +100,7 @@ class Key implements JsonSerializable
      */
     public function pathElement($kind, $identifier = null, $identifierType = null)
     {
-        if ($this->state() !== Key::STATE_COMPLETE) {
+        if (!empty($this->path) && $this->state() !== Key::STATE_COMPLETE) {
             throw new InvalidArgumentException(
                 'Cannot add pathElement because the previous element is missing an id or name'
             );
@@ -282,6 +282,10 @@ class Key implements JsonSerializable
                 );
             }
 
+            if (isset($pathElement['id']) && !is_string($pathElement['id'])) {
+                $pathElement['id'] = (string) $pathElement['id'];
+            }
+
             $res[] = $pathElement;
         }
 
@@ -297,7 +301,11 @@ class Key implements JsonSerializable
     {
         $el = [];
         foreach ($this->path as $element) {
-            $id = (isset($element['id'])) ? $element['id'] : @$element['name'];
+            $element = $element + [
+                'id' => null,
+                'name' => null
+            ];
+            $id = ($element['id']) ? $element['id'] : $element['name'];
             $el[] = sprintf('[%s: %s]', $element['kind'], $id);
         }
 

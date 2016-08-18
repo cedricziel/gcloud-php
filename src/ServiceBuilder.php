@@ -165,6 +165,33 @@ class ServiceBuilder
     }
 
     /**
+     * Google Cloud Natural Language client. Provides natural language
+     * understanding technologies to developers, including sentiment analysis,
+     * entity recognition, and syntax analysis. Currently only English, Spanish,
+     * and Japanese textual context are supported. Find more information at
+     * [Google Cloud Natural Language docs](https://cloud.google.com/natural-language/docs/).
+     *
+     * Example:
+     * ```
+     * use Google\Cloud\ServiceBuilder;
+     *
+     * $builder = new ServiceBuilder([
+     *     'projectId' => 'myAwesomeProject'
+     * ]);
+     *
+     * $language = $builder->naturalLanguage();
+     * ```
+     *
+     * @param array $config Configuration options. See
+     *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
+     * @return NaturalLanguageClient
+     */
+    public function naturalLanguage(array $config = [])
+    {
+        return new NaturalLanguageClient($config ? $this->resolveConfig($config) : $this->config);
+    }
+
+    /**
      * Google Cloud Pub/Sub client. Allows you to send and receive
      * messages between independent applications. Find more information at
      * [Google Cloud Pub/Sub docs](https://cloud.google.com/pubsub/docs/).
@@ -215,11 +242,9 @@ class ServiceBuilder
     }
 
     /**
-     * Google Cloud Natural Language client. Provides natural language
-     * understanding technologies to developers, including sentiment analysis,
-     * entity recognition, and syntax analysis. Currently only English, Spanish,
-     * and Japanese textual context are supported. Find more information at
-     * [Google Cloud Natural Language docs](https://cloud.google.com/natural-language/docs/).
+     * Google Cloud Vision client. Allows you to understand the content of an
+     * image, classify images into categories, detect text, objects, faces and
+     * more. Find more information at [Google Cloud Vision docs](https://cloud.google.com/vision/docs/).
      *
      * Example:
      * ```
@@ -229,16 +254,16 @@ class ServiceBuilder
      *     'projectId' => 'myAwesomeProject'
      * ]);
      *
-     * $language = $builder->naturalLanguage();
+     * $vision = $builder->vision();
      * ```
      *
      * @param array $config Configuration options. See
      *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
-     * @return NaturalLanguageClient
+     * @return VisionClient
      */
-    public function naturalLanguage(array $config = [])
+    public function vision(array $config = [])
     {
-        return new NaturalLanguageClient($config ? $this->resolveConfig($config) : $this->config);
+        return new VisionClient($config ? $this->resolveConfig($config) : $this->config);
     }
 
     /**

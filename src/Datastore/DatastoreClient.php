@@ -205,6 +205,8 @@ class DatastoreClient
      *     @type string $namespaceId Partitions data under a namespace. Useful for
      *           [Multitenant Projects](https://cloud.google.com/datastore/docs/concepts/multitenancy)
      *     @type int $number The number of keys to generate
+     *     @type string|int $id The ID for the last pathElement
+     *     @type string $name The Name for the last pathElement
      * }
      * @return Key[]
      */
@@ -212,9 +214,11 @@ class DatastoreClient
     {
         $options = $options + [
             'number' => 1,
-            'allocateIds' => false,
+            'allocateIds' => true,
             'namespaceId' => null,
-            'ancestors' => []
+            'ancestors' => [],
+            'id' => null,
+            'name' => null
         ];
 
         $path = [];
@@ -222,7 +226,11 @@ class DatastoreClient
             $path = $options['ancestors'];
         }
 
-        $path[] = ['kind' => $kind];
+        $path[] = array_filter([
+            'kind' => $kind,
+            'id' => $options['id'],
+            'name' => $options['name']
+        ]);
 
         $key = new Key($this->projectId, [
             'path' => $path,
@@ -342,8 +350,11 @@ class DatastoreClient
         $keys = [];
         if (isset($res['keys'])) {
             foreach ($res['keys'] as $key) {
-                $keys[] = $this->keys($key['path'], [
-                    'namespaceId' => @$key['partitionId']['namespaceId']
+                $keys[] = new Key($this->projectId, [
+                    'path' => $key['path'],
+                    'namespaceId' => (isset($key['partitionId']['namespaceId'])
+                        ? $key['partitionId']['namespaceId']
+                        : null
                 ]);
             }
         }
@@ -420,7 +431,7 @@ class DatastoreClient
             'transaction' => null
         ];
 
-        if ($options['transaction'] && !($transaction instanceof Transaction)) {
+        if ($options['transaction'] && !($options['transaction'] instanceof Transaction)) {
             throw new InvalidArgumentException(
                 'Given $transaction must be an instance of Transaction'
             );
@@ -645,7 +656,7 @@ class DatastoreClient
      */
     public function deleteBatch(array $keys, array $options = [])
     {
-        return $this->runOperation('deleteBatch', $entities, $options);
+        return $this->runOperation('deleteBatch', $keys, $options);
     }
 
     /**
@@ -697,7 +708,8 @@ class DatastoreClient
      * @param array $options {
      *     Configuration Options
      *
-     *     @type string $readConsistency See [ReadConsistency](https://cloud.google.com/datastore/reference/rest/v1beta3/ReadOptions#ReadConsistency).
+     *     @type string $readConsistency See
+     *           [ReadConsistency](https://cloud.google.com/datastore/reference/rest/v1beta3/ReadOptions#ReadConsistency).
      *     @type Transaction $transaction Run the lookup in a {@see Google\Cloud\Datastore\Transaction}
      * }
      * @return array
@@ -723,38 +735,14 @@ class DatastoreClient
 
         $result = [];
         if (isset($res['found'])) {
-
-            $result['found'] = [];
-            foreach ($res['found'] as $entity) {
-                $key = $this->key(
-                    $entity['entity']['key']['path'],
-                    $entity['entity']['key']['partitionId']
-                );
-
-                $props = $entity['entity']['properties'];
-                array_walk($props, function (&$property) {
-                    $property = current($property);
-                });
-
-                $result['found'][] = $this->entity($key, $props);
-            }
+            $result['found'] = $this->mapEntityResult($res['found']);
         }
 
         if (isset($res['missing'])) {
-
-            $result['missing'] = [];
-            foreach ($res['missing'] as $entity) {
-                $key = $this->key(
-                    $entity['entity']['key']['path'],
-                    $entity['entity']['key']['partitionId']
-                );
-
-                $result['missing'][] = $key;
-            }
+            $result['missing'] = $this->mapEntityResult($res['missing']);
         }
 
         if (isset($res['deferred'])) {
-
             $result['deferred'] = [];
             foreach ($res['deferred'] as $deferred) {
                 $key = $this->key(
@@ -848,7 +836,7 @@ class DatastoreClient
      *
      * @param QueryInterface $query
      * @param array $options Configuration Options
-     * @return \Generator<Entity>
+     * @return \Generator<Google\Cloud\Datastore\Entity>
      */
     public function runQuery(QueryInterface $query, array $options = [])
     {
@@ -861,20 +849,9 @@ class DatastoreClient
             ]);
 
             if (isset($res['batch']['entityResults']) && is_array($res['batch']['entityResults'])) {
-                foreach ($res['batch']['entityResults'] as $entity) {
-                    $key = $this->key(
-                        $entity['entity']['key']['path'],
-                        $entity['entity']['key']['partitionId']
-                    );
-
-                    $properties = $entity['entity']['properties'];
-                    array_walk($properties, function (&$property) {
-                        $property = current($property);
-                    });
-
-                    yield $this->entity($key, $properties, [
-                        'cursor' => $entity['cursor']
-                    ]);
+                $results = $this->mapEntityResult($res['batch']['entityResults']);
+                foreach ($results as $result) {
+                    yield $result;
                 }
 
                 if ($query->canPaginate() && $res['batch']['moreResults'] !== 'NO_MORE_RESULTS') {
@@ -895,5 +872,32 @@ class DatastoreClient
         call_user_func_array([$operation, $method], [$entities]);
 
         return $operation->commit($options);
+    }
+
+    /**
+     * Convert an EntityResult into an array of entities
+     *
+     * @param array $entityResult [EntityResult](https://cloud.google.com/datastore/reference/rest/v1beta3/EntityResult)
+     * @return Entity[]
+     */
+    private function mapEntityResult(array $entityResult)
+    {
+        $result = [];
+
+        foreach ($entityResult as $entity) {
+            $key = new Key($this->projectId, [
+                'path' => $entity['entity']['key']['path'],
+                'namespaceId' => $entity['entity']['key']['partitionId']
+            ]);
+
+            $props = $entity['entity']['properties'];
+            array_walk($props, function (&$property) {
+                $property = current($property);
+            });
+
+            $result[] = $this->entity($key, $props, [
+                'cursor' => $entity['cursor']
+            ]);
+        }
     }
 }
