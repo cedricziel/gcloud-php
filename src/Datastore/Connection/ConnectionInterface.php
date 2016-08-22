@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore\Connection;
+namespace Google\Cloud\Datastore\Connection;
 
 /**
  * Represents a connection to

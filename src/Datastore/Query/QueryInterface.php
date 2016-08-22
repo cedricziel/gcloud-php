@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore\Query;
+namespace Google\Cloud\Datastore\Query;
 
 use JsonSerializable;
 

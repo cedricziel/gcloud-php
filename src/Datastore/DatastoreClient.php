@@ -18,10 +18,10 @@
 namespace Google\Cloud\Datastore;
 
 use Google\Cloud\ClientTrait;
-use Google\Cloud\DataStore\Query\GqlQuery;
-use Google\Cloud\DataStore\Query\Query;
-use Google\Cloud\DataStore\Query\QueryBuilder;
-use Google\Cloud\DataStore\Query\QueryInterface;
+use Google\Cloud\Datastore\Query\GqlQuery;
+use Google\Cloud\Datastore\Query\Query;
+use Google\Cloud\Datastore\Query\QueryBuilder;
+use Google\Cloud\Datastore\Query\QueryInterface;
 use Google\Cloud\Datastore\Connection\Rest;
 use InvalidArgumentException;
 
@@ -352,7 +352,7 @@ class DatastoreClient
             foreach ($res['keys'] as $key) {
                 $keys[] = new Key($this->projectId, [
                     'path' => $key['path'],
-                    'namespaceId' => (isset($key['partitionId']['namespaceId'])
+                    'namespaceId' => (isset($key['partitionId']['namespaceId']))
                         ? $key['partitionId']['namespaceId']
                         : null
                 ]);
@@ -862,7 +862,7 @@ class DatastoreClient
             } else {
                 $moreResults = false;
             }
-        } while($moreResults);
+        } while ($moreResults);
     }
 
     private function runOperation($method, array $entities, array $options = [])
@@ -882,22 +882,26 @@ class DatastoreClient
      */
     private function mapEntityResult(array $entityResult)
     {
-        $result = [];
+        $entities = [];
 
-        foreach ($entityResult as $entity) {
+        foreach ($entityResult as $result) {
             $key = new Key($this->projectId, [
-                'path' => $entity['entity']['key']['path'],
-                'namespaceId' => $entity['entity']['key']['partitionId']
+                'path' => $result['entity']['key']['path'],
+                'namespaceId' => $result['entity']['key']['partitionId']
             ]);
 
-            $props = $entity['entity']['properties'];
+            $props = $result['entity']['properties'];
             array_walk($props, function (&$property) {
                 $property = current($property);
             });
 
-            $result[] = $this->entity($key, $props, [
-                'cursor' => $entity['cursor']
+            $entities[] = $this->entity($key, $props, [
+                'cursor' => (isset($result['cursor']))
+                    ? $result['cursor']
+                    : null
             ]);
         }
+
+        return $entities;
     }
 }

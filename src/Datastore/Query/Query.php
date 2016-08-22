@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore\Query;
+namespace Google\Cloud\Datastore\Query;
 
-use Google\Cloud\DataStore\DatastoreTrait;
+use Google\Cloud\Datastore\DatastoreTrait;
 use Google\Cloud\Datastore\DatastoreClient;
 use InvalidArgumentException;
 
@@ -274,7 +274,9 @@ class Query implements QueryInterface
     /**
      * The starting point for the query results
      *
+     * @codingStandardsIgnoreStart
      * @see https://cloud.google.com/datastore/docs/concepts/queries#cursors_limits_and_offsets Cursors, Limits and Offsets
+     * @codingStandardsIgnoreEnd
      *
      * @param string $cursor The cursor on which to start the result
      * @return Query
@@ -289,7 +291,9 @@ class Query implements QueryInterface
     /**
      * The ending point for the query results
      *
+     * @codingStandardsIgnoreStart
      * @see https://cloud.google.com/datastore/docs/concepts/queries#cursors_limits_and_offsets Cursors, Limits and Offsets
+     * @codingStandardsIgnoreEnd
      *
      * @param string $cursor The cursor on which to end the result
      * @return Query
@@ -304,7 +308,9 @@ class Query implements QueryInterface
     /**
      * The number of results to skip
      *
+     * @codingStandardsIgnoreStart
      * @see https://cloud.google.com/datastore/docs/concepts/queries#cursors_limits_and_offsets Cursors, Limits and Offsets
+     * @codingStandardsIgnoreEnd
      *
      * @param int $num The number of results to skip
      * @return Query
@@ -319,7 +325,9 @@ class Query implements QueryInterface
     /**
      * The number of results to return
      *
+     * @codingStandardsIgnoreStart
      * @see https://cloud.google.com/datastore/docs/concepts/queries#cursors_limits_and_offsets Cursors, Limits and Offsets
+     * @codingStandardsIgnoreEnd
      *
      * @param int $num The number of results to retun
      * @return Query

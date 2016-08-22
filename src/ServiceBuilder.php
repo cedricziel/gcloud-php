@@ -21,9 +21,10 @@ use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Cloud\BigQuery\BigQueryClient;
 use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Logging\LoggingClient;
-use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\NaturalLanguage\NaturalLanguageClient;
+use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\Vision\VisionClient;
 
 /**
  * Google Cloud Platform is a set of modular cloud-based services that allow you

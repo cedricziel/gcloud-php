@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore;
+namespace Google\Cloud\Datastore;
+
+use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Utility methods mostly for translating data from user input to API format.
@@ -86,34 +89,34 @@ trait DatastoreTrait
     private function valueObject($value, $encode = false)
     {
         switch (gettype($value)) {
-            case "boolean" :
+            case "boolean":
                 $propertyValue = [
                     "booleanValue" => $value
                 ];
 
                 break;
-            case "integer" :
+            case "integer":
                 $propertyValue = [
                     "integerValue" => $value
                 ];
 
                 break;
-            case "double" :
+            case "double":
                 $propertyValue = [
                     "doubleValue" => $value
                 ];
 
                 break;
-            case "string" :
+            case "string":
                 $propertyValue = [
                     "stringValue" => $value
                 ];
 
                 break;
-            case "array" :
+            case "array":
                 $values = [];
                 foreach ($value as $key => $val) {
-                    $values[$key] = $this->valueObject($val);
+                    $values[$key] = $this->valueObject($val, $encode);
                 }
 
                 $propertyValue = [
@@ -122,20 +125,31 @@ trait DatastoreTrait
                     ]
                 ];
                 break;
-            case "object" :
+            case "object":
                 $propertyValue = $this->objectProperty($value);
                 break;
-            case "resource" :
-                throw new \InvalidArgumentException('come on pal');
+            case "resource":
+                $content = stream_get_contents($value);
+
+                $propertyValue = [
+                    "blobValue" => ($encode)
+                        ? base64_encode($content)
+                        : $content
+                ];
                 break;
-            case "null" :
+            case "NULL":
                 $propertyValue = [
                     "nullValue" => null
                 ];
                 break;
-            case "unknown type" :
+            //@codeCoverageIgnoreStart
+            case "unknown type":
                 $propertyValue = '';
                 break;
+            default:
+                $propertyValue = '';
+                break;
+            //@codeCoverageIgnoreEnd
         }
 
         return $propertyValue;
@@ -147,9 +161,10 @@ trait DatastoreTrait
      * @todo add middleware
      *
      * @param mixed $value
+     * @param bool $encode
      * @return array
      */
-    private function objectProperty($value)
+    private function objectProperty($value, $encode = false)
     {
         if ($value instanceof \DateTimeInterface) {
             return [
@@ -157,17 +172,9 @@ trait DatastoreTrait
             ];
         }
 
-        if ($value instanceof StreamInterface) {
-            $stream = ($this->options['encode']) ? base64_encode((string) $value) : (string) $value;
-
-            return [
-                'blobValue' => $stream
-            ];
-        }
-
-        return [
-            'stringValue' => sprintf('Value of type `%s` could not be stored correctly', get_class($value))
-        ];
+        throw new InvalidArgumentException(
+            sprintf('Value of type `%s` could not be serialize', get_class($value))
+        );
     }
 
     /**

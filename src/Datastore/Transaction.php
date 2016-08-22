@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore;
+namespace Google\Cloud\Datastore;
 
 /**
  * Represents a Transaction

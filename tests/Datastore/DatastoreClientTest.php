@@ -17,12 +17,12 @@
 
 namespace Google\Cloud\Tests\Datastore;
 
-use Google\Cloud\DataStore\Connection\ConnectionInterface;
-use Google\Cloud\DataStore\Entity;
-use Google\Cloud\DataStore\Key;
-use Google\Cloud\DataStore\Query\GqlQuery;
-use Google\Cloud\DataStore\Query\Query;
-use Google\Cloud\DataStore\Transaction;
+use Google\Cloud\Datastore\Connection\ConnectionInterface;
+use Google\Cloud\Datastore\Entity;
+use Google\Cloud\Datastore\Key;
+use Google\Cloud\Datastore\Query\GqlQuery;
+use Google\Cloud\Datastore\Query\Query;
+use Google\Cloud\Datastore\Transaction;
 use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Datastore\Operation;
 use Prophecy\Argument;
@@ -173,6 +173,9 @@ class DatastoreClientTest extends \PHPUnit_Framework_TestCase
                     [
                         'path' => [
                             ['kind' => 'Person', 'name' => 'John']
+                        ],
+                        'partitionId' => [
+                            'namespaceId' => 'foo', 'projectId' => 'bar'
                         ]
                     ], [
                         'path' => [
@@ -420,8 +423,8 @@ class DatastoreClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($res));
         $this->assertTrue(isset($res['missing']) && is_array($res['missing']));
 
-        $this->assertInstanceOf(Key::class, $res['missing'][0]);
-        $this->assertInstanceOf(Key::class, $res['missing'][1]);
+        $this->assertInstanceOf(Entity::class, $res['missing'][0]);
+        $this->assertInstanceOf(Entity::class, $res['missing'][1]);
     }
 
     public function testLookupBatchDeferred()
@@ -457,7 +460,70 @@ class DatastoreClientTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testRunQuery()
-    {}
+    {
+        $queryResult = json_decode(file_get_contents(__DIR__ .'/../fixtures/datastore/query-results.json'), true);
+
+        $this->connection->runQuery(Argument::type('array'))
+            ->willReturn($queryResult['notPaged']);
+
+        $this->datastore->setConnection($this->connection->reveal());
+
+        $q = $this->datastore->query();
+        $res = $this->datastore->runQuery($q);
+
+        $this->assertInstanceOf(\Generator::class, $res);
+
+        $arr = iterator_to_array($res);
+
+        $this->assertEquals(count($arr), 2);
+        $this->assertInstanceOf(Entity::class, $arr[0]);
+    }
+
+    public function testRunQueryPaged()
+    {
+        $queryResult = json_decode(file_get_contents(__DIR__ .'/../fixtures/datastore/query-results.json'), true);
+
+        $this->connection->runQuery(Argument::type('array'))
+            ->will(function($args, $mock) use ($queryResult) {
+
+                // The 2nd call will return the 2nd page of results!
+                $mock->runQuery(Argument::type('array'))
+                    ->willReturn($queryResult['paged'][1]);
+
+                return $queryResult['paged'][0];
+            });
+
+        $this->datastore->setConnection($this->connection->reveal());
+
+        $q = $this->datastore->query();
+        $res = $this->datastore->runQuery($q);
+
+        $this->assertInstanceOf(\Generator::class, $res);
+
+        $arr = iterator_to_array($res);
+
+        $this->assertEquals(count($arr), 3);
+        $this->assertInstanceOf(Entity::class, $arr[0]);
+    }
+
+    public function testRunQueryNoResults()
+    {
+        $queryResult = json_decode(file_get_contents(__DIR__ .'/../fixtures/datastore/query-results.json'), true);
+
+        $this->connection->runQuery(Argument::type('array'))
+            ->willReturn($queryResult['noResults']);
+
+        $this->datastore->setConnection($this->connection->reveal());
+
+        $q = $this->datastore->query();
+        $res = $this->datastore->runQuery($q);
+
+        $this->assertInstanceOf(\Generator::class, $res);
+
+        $arr = iterator_to_array($res);
+
+        $this->assertEquals(count($arr), 0);
+    }
 
     private function mockCommitConnection($return = null)
     {

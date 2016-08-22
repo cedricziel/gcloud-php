@@ -17,7 +17,7 @@
 
 namespace Google\Cloud\Datastore;
 
-use Google\Cloud\DataStore\Connection\ConnectionInterface;
+use Google\Cloud\Datastore\Connection\ConnectionInterface;
 
 /**
  * Construct complex operations and commit them at the same time.
@@ -321,13 +321,27 @@ class Operation
             $options['transaction'] = $this->transaction->id();
         }
 
-        return $this->connection->commit($options + [
-            'projectId' => $this->projectId,
-            'mode' => ($this->transaction) ? 'TRANSACTIONAL' : 'NON_TRANSACTIONAL',
-            'mutations' => $this->mutations
+        $res = $this->connection->commit($options + $this->operationObject() + [
+            'projectId' => $this->projectId
         ]);
 
         $this->mutations = [];
+
+        return $res;
+    }
+
+    /**
+     * Create the service object
+     *
+     * @access private
+     * @return array
+     */
+    public function operationObject()
+    {
+        return [
+            'mode' => ($this->transaction) ? 'TRANSACTIONAL' : 'NON_TRANSACTIONAL',
+            'mutations' => $this->mutations
+        ];
     }
 
     /**
@@ -347,7 +361,7 @@ class Operation
     ) {
         $this->validateBatch($input, $type, $additionalCheck);
 
-        $mutations = array_map(function($element) use ($type, $operation) {
+        $mutations = array_map(function ($element) use ($type, $operation) {
             return [
                 $operation => $element
             ];
@@ -366,7 +380,7 @@ class Operation
      */
     private function validateBatch(array $input, $type)
     {
-        array_map(function($element) use ($type) {
+        array_map(function ($element) use ($type) {
             if (!($element instanceof $type)) {
                 throw new InvalidArgumentException(sprintf(
                     'Each member of input array must be an instance of %s',

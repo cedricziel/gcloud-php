@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace Google\Cloud\DataStore;
+namespace Google\Cloud\Datastore;
 
 use ArrayAccess;
 use InvalidArgumentException;
@@ -193,11 +193,7 @@ class Entity implements JsonSerializable, ArrayAccess
      */
     public function offsetSet($key, $val)
     {
-        if (is_null($key)) {
-            throw new InvalidArgumentException('offset is required');
-        }
-
-        $this->set($key, $val);
+        $this->entity[$key] = $val;
     }
 
     /**
