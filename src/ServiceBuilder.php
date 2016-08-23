@@ -60,7 +60,7 @@ class ServiceBuilder
      * ```
      * use Google\Cloud\ServiceBuilder;
      *
-     * $builder = new ServiceBuilder([
+     * $cloud = new ServiceBuilder([
      *     'projectId' => 'myAwesomeProject'
      * ]);
      * ```
@@ -96,13 +96,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $bigQuery = $builder->bigQuery();
+     * $bigQuery = $cloud->bigQuery();
      * ```
      *
      * @param array $config Configuration options. See
@@ -121,18 +115,12 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $datastore = $builder->datastore();
+     * $datastore = $cloud->datastore();
      * ```
      *
      * @param array $config Configuration options. See
      *        {@see Google\Cloud\ServiceBuilder::__construct()} for the available options.
-     * @return LoggingClient
+     * @return DatastoreClient
      */
     public function datastore(array $config = [])
     {
@@ -147,13 +135,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $logging = $builder->logging();
+     * $logging = $cloud->logging();
      * ```
      *
      * @param array $config Configuration options. See
@@ -174,13 +156,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $language = $builder->naturalLanguage();
+     * $language = $cloud->naturalLanguage();
      * ```
      *
      * @param array $config Configuration options. See
@@ -199,13 +175,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $pubsub = $builder->pubsub();
+     * $pubsub = $cloud->pubsub();
      * ```
      *
      * @param array $config Configuration options. See
@@ -224,13 +194,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $storage = $builder->storage();
+     * $storage = $cloud->storage();
      * ```
      *
      * @param array $config Configuration options. See
@@ -249,13 +213,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * use Google\Cloud\ServiceBuilder;
-     *
-     * $builder = new ServiceBuilder([
-     *     'projectId' => 'myAwesomeProject'
-     * ]);
-     *
-     * $vision = $builder->vision();
+     * $vision = $cloud->vision();
      * ```
      *
      * @param array $config Configuration options. See
