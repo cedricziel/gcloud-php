@@ -33,7 +33,7 @@ use Psr\Http\Message\StreamInterface;
  * use Google\Cloud\ServiceBuilder;
  *
  * $cloud = new ServiceBuilder;
- * $datastore = $cloud->dataStore();
+ * $datastore = $cloud->datastore();
  *
  * $key = $datastore->key('Person', 'Bob');
  * $entity = $datastore->entity($key), [

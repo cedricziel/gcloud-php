@@ -31,7 +31,7 @@ use Google\Cloud\Datastore\Connection\ConnectionInterface;
  * use Google\Cloud\ServiceBuilder;
  *
  * $cloud = new ServiceBuilder;
- * $datastore = $cloud->dataStore();
+ * $datastore = $cloud->datatore();
  *
  * $operation = $datastore->operation();
  * ```

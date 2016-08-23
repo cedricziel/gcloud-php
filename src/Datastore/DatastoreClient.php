@@ -55,14 +55,14 @@ class DatastoreClient
      *     'projectId' => 'my-awesome-project'
      * ]);
      *
-     * $dataStore = $cloud->dataStore();
+     * $datastore = $cloud->datastore();
      * ```
      *
      * ```
      * // The Datastore client can also be instantianted directly.
      * use Google\Cloud\Datastore\DatastoreClient;
      *
-     * $dataStore = new DatastoreClient([
+     * $datastore = new DatastoreClient([
      *     'projectId' => 'my-awesome-project'
      * ]);
      * ```
