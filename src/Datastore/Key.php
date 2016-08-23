@@ -25,7 +25,15 @@ use JsonSerializable;
  *
  * Keys are unique identifiers for entities.
  *
+ * Example:
+ * ```
+ * use Google\Cloud\ServiceBuilder;
  *
+ * $cloud = new ServiceBuilder();
+ * $datastore = $cloud->datastore();
+ *
+ * $key = $datastore->key('Person', 'Bob');
+ * ```
  *
  * @see https://cloud.google.com/datastore/reference/rest/v1beta3/Key Key
  */
@@ -89,6 +97,11 @@ class Key implements JsonSerializable
      * an `InvalidArgumentException` will be thrown. Once an incomplete
      * pathElement is given, the key cannot be extended any further.
      *
+     * Example:
+     * ```
+     * $key->pathElement('Person', 'Jane');
+     * ```
+     *
      * @see https://cloud.google.com/datastore/reference/rest/v1/Key#PathElement PathElement
      *
      * @param string $kind The kind
@@ -115,6 +128,11 @@ class Key implements JsonSerializable
 
     /**
      * Add a path element to the beginning of the Key path.
+     *
+     * Example:
+     * ```
+     * $key->ancestor('Person', 'Bob');
+     * ```
      *
      * @see https://cloud.google.com/datastore/reference/rest/v1/Key#PathElement PathElement
      *
