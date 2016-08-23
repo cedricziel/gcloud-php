@@ -17,8 +17,8 @@
 
 namespace Google\Cloud\Datastore\Query;
 
-use Google\Cloud\Datastore\DatastoreTrait;
 use Google\Cloud\Datastore\DatastoreClient;
+use Google\Cloud\Datastore\DatastoreTrait;
 use InvalidArgumentException;
 
 /**
