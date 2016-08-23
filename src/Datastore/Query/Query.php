@@ -168,11 +168,11 @@ class Query implements QueryInterface
      */
     public function projection($properties)
     {
-        if (!is_array($this->properties)) {
+        if (!is_array($properties)) {
             $properties = [$properties];
         }
 
-        $this->options['query']['projection'] = $this->properties;
+        $this->options['query']['projection'] = $properties;
 
         return $this;
     }
@@ -181,7 +181,8 @@ class Query implements QueryInterface
      * Set the Kind to query.
      *
      * If empty, returns entities of all kinds. Must be set in order to filter
-     * results. Currently, only one kind may be specified.
+     * results. While you may supply as many kinds as you wish, datastore currently
+     * only accepts one at a time.
      *
      * @param array|string $kinds
      * @return Query
@@ -193,7 +194,7 @@ class Query implements QueryInterface
         }
 
         foreach ($kinds as $kind) {
-            $this->options['query']['kind'] = [$this->propertyName($kind)];
+            $this->options['query']['kind'][] = $this->propertyName($kind);
         }
 
         return $this;

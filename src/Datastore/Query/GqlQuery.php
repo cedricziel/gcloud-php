@@ -92,6 +92,14 @@ class GqlQuery implements QueryInterface
     private $options;
 
     /**
+     * @var array
+     */
+    private $allowedBindingTypes = [
+        self::BINDING_NAMED,
+        self::BINDING_POSITIONAL,
+    ];
+
+    /**
      * @param string $query The GQL Query string
      * @param string $projectId Your Google Cloud Platform Project ID
      * @param array $options {
@@ -100,10 +108,6 @@ class GqlQuery implements QueryInterface
      *     @type bool $allowLiterals Whether literal values will be allowed in
      *           the query string. This is false by default, and parameter
      *           binding is strongly encouraged over literals.
-     *     @type string $bindingType Force the binding type to either named
-     *           or positional bindings. The library will attempt to determine
-     *           this internally. Use `GqlQuery::BINDING_NAMED` or
-     *           `GqlQuery::BINDING_POSITIONAL` as allowed values.
      *     @type array $bindings An array of values to bind to the query string.
      *           Queries using Named Bindings should provide a key/value set,
      *           while queries using Positional Bindings must provide a simple
@@ -124,13 +128,8 @@ class GqlQuery implements QueryInterface
         $this->options = $options + [
             'allowLiterals' => false,
             'bindingType' => $this->determineBindingType($options),
-            'query' => null,
             'bindings' => []
         ];
-
-        if ($this->options['bindingType'] === self::BINDING_NAMED && !$this->isAssoc($this->options['bindings'])) {
-            throw new InvalidArgumentException('Bindings must be a set of key-value pairs if named binding is used.');
-        }
     }
 
     /**
