@@ -93,6 +93,49 @@ class Entity implements JsonSerializable, ArrayAccess
     }
 
     /**
+     * @param string $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        return $this->offsetExists($property) ? $this->offsetGet($property) : null;
+    }
+
+    /**
+     * @param string $property
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function __set($property, $value)
+    {
+        $this->offsetSet($property, $value);
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return void
+     */
+    public function __unset($property)
+    {
+        if ($this->offsetExists($property)) {
+            $this->offsetUnset($property);
+        }
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return bool
+     */
+    public function __isset($property)
+    {
+        return $this->offsetExists($property) && $this->offsetGet($property) !== null;
+    }
+
+    /**
      * Get the entity data
      *
      * Example:

@@ -54,6 +54,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
         unset($entity['test']);
         $this->assertFalse(isset($entity['test']));
+
+        $entity->magicProperty = 'magic value';
+        $this->assertEquals('magic value', $entity->magicProperty);
+
+        $this->assertNull($entity->nonExistentMagicProperty);
+        $this->assertFalse(isset($entity->nonExistentMagicProperty));
+
+        $this->assertTrue(isset($entity->magicProperty));
+
+        unset($entity->magicProperty);
+        $this->assertFalse(isset($entity->magicProperty));
     }
 
     /**
